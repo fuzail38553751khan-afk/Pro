@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You 💌</title>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg:#fff0f5; --accent:#ff85a2; --text:#5d4037; --white:#ffffff; }
+body { margin:0; font-family:'Outfit',sans-serif; background:var(--bg); display:flex; justify-content:center; align-items:center; height:100vh; overflow:hidden; }
+
+.envelope { width:220px; height:220px; background:var(--white); border:2px solid var(--accent); border-radius:40px; display:flex; justify-content:center; align-items:center; cursor:pointer; color:var(--accent); font-weight:700; font-size:1.2rem; transition:0.4s; }
+.envelope:hover { transform:scale(1.05); background:var(--accent); color:var(--white); }
+
+.letter { width:350px; background:var(--white); padding:40px; border-radius:40px; display:none; flex-direction:column; align-items:center; text-align:center; box-shadow:0 20px 50px rgba(255,133,162,0.3); position:absolute; }
+
+.title { font-size:1.8rem; font-weight:700; color:var(--accent); margin-bottom:20px; }
+.line { font-size:1.2rem; color:var(--text); margin-bottom:10px; font-weight:500; }
+
+.page { display:none; flex-direction:column; align-items:center; width:100%; }
+.active { display:flex; }
+
+.next-btn { margin-top:30px; padding:12px 35px; border:none; border-radius:50px; background:var(--accent); color:var(--white); font-weight:600; cursor:pointer; transition:0.3s; }
+.next-btn:hover { background:#ff5c85; transform:scale(1.05); box-shadow:0 0 15px rgba(255,51,102,0.5); }
+
+.btn-group { display:flex; gap:20px; margin-top:25px; align-items:center; justify-content:center; min-height:60px; }
+.btn { padding:12px 28px; border:none; border-radius:50px; font-weight:700; cursor:pointer; transition:0.3s; }
+.yes { background:#ff3366; color:white; box-shadow:0 4px 15px rgba(255,51,102,0.3); }
+.yes:hover { transform:scale(1.1); box-shadow:0 0 20px #ff3366; }
+.no { background:#ffffff; color:#ff85a2; border:2px solid #ff85a2; }
+.no:hover { transform:scale(1.05); }
+
+.heart { position:fixed; z-index:2000; font-size:20px; pointer-events:none; animation:fall 2s linear forwards; }
+@keyframes fall { 0% {opacity:1; transform:translateY(0) scale(1);} 100% {opacity:0; transform:translateY(600px) scale(1.5);} }
+
+#ratingMsg { font-size:1.3rem; font-weight:700; color:#ff3366; margin-top:15px; text-align:center; }
+</style>
+</head>
+<body>
+
+<div class="envelope" id="envelope">Open for you 💌</div>
+
+<div class="letter" id="letter">
+  <!-- Page 1 -->
+  <div class="page active">
+    <div class="title">Dear A...</div>
+    <div class="line">Mai tumse ye baat share karna chahta hoon…</div>
+    <button class="next-btn" onclick="nextPage()">Aage dekho →</button>
+  </div>
+
+  <!-- Page 2 -->
+  <div class="page" style="background:linear-gradient(135deg,#fff0f5,#ffcce6);">
+    <div class="line">Tumhari baatein sunke lagta hai…</div>
+    <div class="line">har moment interesting ban jata hai.</div>
+    <button class="next-btn" onclick="nextPage()">Next →</button>
+  </div>
+
+  <!-- Page 3 -->
+  <div class="page" style="background:linear-gradient(135deg,#ffe4e1,#ffd6e8);">
+    <div class="line">Har pal sochta hoon, kaash ye baatein…</div>
+    <div class="line">humesha yun hi chalein.</div>
+    <button class="next-btn" onclick="nextPage()">Next →</button>
+  </div>
+
+  <!-- Page 4 -->
+  <div class="page" style="background:linear-gradient(135deg,#ffe0eb,#ffcce6);">
+    <div class="line">Tumhari baatein sunke…</div>
+    <div class="line">lagta hai main bas tumse hi baat karta rahu. </div>
+    <button class="next-btn" onclick="nextPage()">Next →</button>
+  </div>
+
+  <!-- Page 5 -->
+  <div class="page" style="background:linear-gradient(135deg,#ffd6e8,#ffb3d1);">
+    <div class="line" style="font-weight:700; color:#ff3366;">Ab aur intezaar nahi…</div>
+    <div class="line" style="font-weight:700; color:#ff3366;">will you be mine? </div>
+    <div class="btn-group">
+      <button class="btn yes" onclick="celebrate()">YES! 🌸</button>
+      <button class="btn no" id="noBtn" onmouseover="moveNo()">No</button>
+    </div>
+    <div id="ratingMsg"></div>
+  </div>
+
+  <!-- Final page after Yes -->
+  <div class="page" id="finalPage">
+    <div class="title">YAY! 🎉</div>
+    <div class="line">Tumne haan bol diya!</div>
+    <a id="dmLink" href="https://www.instagram.com/direct/inbox/?username=fuzaill.3x" target="_blank" class="next-btn">DM me now 💌</a>
+  </div>
+</div>
+
+<script>
+const envelope = document.getElementById('envelope');
+const letter = document.getElementById('letter');
+const pages = document.querySelectorAll('.page');
+
+envelope.addEventListener('click', ()=>{
+  envelope.style.display='none';
+  letter.style.display='flex';
+  pages[0].classList.add('active');
+});
+
+function nextPage() {
+  const active = document.querySelector('.page.active');
+  active.classList.remove('active');
+  if(active.nextElementSibling) active.nextElementSibling.classList.add('active');
+}
+
+// No button playful dodge
+const noBtn = document.getElementById('noBtn');
+noBtn.addEventListener('mouseenter', ()=>{
+  const maxX = window.innerWidth - noBtn.offsetWidth - 50;
+  const maxY = window.innerHeight - noBtn.offsetHeight - 50;
+  const randomX = Math.random()*maxX;
+  const randomY = Math.random()*maxY;
+  noBtn.style.position='absolute';
+  noBtn.style.left=randomX+'px';
+  noBtn.style.top=randomY+'px';
+});
+
+// Yes button: hearts + confetti + firecracker + rating msg + DM open
+function celebrate() {
+  // Heart rain
+  for(let i=0;i<60;i++){
+    const heart = document.createElement('div');
+    heart.className='heart';
+    const heartsArr=['❤️','💖','💘','💝','💕','❣️','💟','💗'];
+    heart.textContent=heartsArr[Math.floor(Math.random()*heartsArr.length)];
+    heart.style.left=Math.random()*window.innerWidth+'px';
+    heart.style.fontSize=(15+Math.random()*25)+'px';
+    document.body.appendChild(heart);
+    setTimeout(()=>{ heart.remove(); },2000);
+  }
+
+  // Confetti/firecracker
+  const duration = 3000;
+  const end = Date.now()+duration;
+  (function frame(){
+    confetti({ particleCount: 7, angle: 60, spread: 55, origin:{x:0}, colors:['#ff85a2','#ff3366'] });
+    confetti({ particleCount: 7, angle: 120, spread: 55, origin:{x:1}, colors:['#ff85a2','#ff3366'] });
+    if(Date.now()<end) requestAnimationFrame(frame);
+  }());
+
+  // Show rating message
+  document.getElementById('ratingMsg').textContent="Yay! Tumne haan bol diya! 💖";
+
+  // Hide buttons
+  document.querySelector('.btn-group').style.display='none';
+
+  // Move to final page after 1.5s and open DM
+  setTimeout(()=>{
+    nextPage();
+    window.open('https://www.instagram.com/direct/inbox/?username=fuzaill.3x','_blank');
+  },1500);
+}
+</script>
+</body>
+</html>
